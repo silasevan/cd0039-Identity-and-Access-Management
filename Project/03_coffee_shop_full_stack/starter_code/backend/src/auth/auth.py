@@ -1,12 +1,15 @@
+import os
 import json
 from flask import request, _request_ctx_stack
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
+from dotenv import load_dotenv
 
-AUTH0_DOMAIN = 'dev-q3wvjxkn.us.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'mycoffeeshop'
+load_dotenv()
+AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN")
+ALGORITHMS = os.environ.get("ALGORITHMS")
+API_AUDIENCE = os.environ.get("API_AUDIENCE")
 
 # AuthError Exception
 '''
@@ -15,7 +18,7 @@ A standardized way to communicate auth failure modes
 '''
 
 
-class AuthError(Exception):                     # from udacity class room
+class AuthError(Exception):  # from udacity class room
     def __init__(self, error, status_code):
         self.error = error
         self.status_code = status_code
@@ -31,6 +34,7 @@ class AuthError(Exception):                     # from udacity class room
         it should raise an AuthError if the header is malformed
     return the token part of the header
 '''
+
 
 #  code from udacity class room
 def get_token_auth_header():
@@ -107,7 +111,7 @@ def check_permissions(permission, payload):
 '''
 
 
-def verify_decode_jwt(token):                   # from udacity class room
+def verify_decode_jwt(token):
     # GET THE PUBLIC KEY FROM AUTH0
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())

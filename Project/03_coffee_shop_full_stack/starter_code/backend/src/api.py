@@ -1,4 +1,4 @@
-import os
+import os,sys
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
 import json
@@ -6,6 +6,7 @@ from flask_cors import CORS
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth
+
 
 app = Flask(__name__)
 setup_db(app)
@@ -16,12 +17,12 @@ CORS(app)
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-db_drop_and_create_all()
+#db_drop_and_create_all()
 
 # ROUTES
 '''
 @TODO implement endpoint
-    GET /drinks
+    GET /drinksc
         it should be a public endpoint
         it should contain only the drink.short() data representation
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
@@ -54,7 +55,7 @@ def get_drinks():
 
 @app.route("/drinks-detail", methods=['GET'])
 @requires_auth('get:drinks-detail')
-def get_drink_detail(jwt, ):
+def get_drink_detail(jwt):
     try:
         drinks = Drink.query.all()
 
@@ -98,6 +99,7 @@ def add_drink(jwt):
         })
 
     except:
+        print(sys.exc_info())
         abort(422)
 
 
@@ -116,7 +118,7 @@ def add_drink(jwt):
 
 @app.route("/drinks/<id>", methods=['PATCH'])
 @requires_auth('patch:drinks')
-def update_drink(jwt, id):                    # code from udacity classroom
+def update_drink(jwt, id):  # code from udacity classroom
     drink = Drink.query.get(id)
 
     if drink:
